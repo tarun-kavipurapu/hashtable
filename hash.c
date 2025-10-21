@@ -3,7 +3,6 @@
 #include<unistd.h>
 #include <string.h>
 
-// Function prototypes (forward declarations)
 struct Table* NewTable(size_t capacity);
 void freeTable(struct Table *table);
 size_t hash(const char* key, int tableSize);
@@ -19,20 +18,9 @@ void* get(const struct Table* table, const char* key);
 #define LOAD_FACTOR_THRESHOLD 0.75  
 
 
-/**
- * PLAN
- *  Implentation steps extend the functionality as you go
- *  - key is int and val is int
- *  - key is int and val is  anything
- *  - key should be anything(supported values) and val should be anything
- *   */
-
- /**
-  * have an entriesay key is the index and value is the entriesay value at the index;
-  */
  typedef struct Entry
 {
-    /* data */
+
     char * key; //key of the string type 
     void* value; //the value can be of any type
 }Entry;
@@ -41,7 +29,7 @@ void* get(const struct Table* table, const char* key);
  {
     /**
      * capacity/size = load ratio
-     * after load ration exceeds a certain limit expand the array
+     * after load ratio exceeds a certain limit expand/resize the array
      * */ 
     
     Entry *entries ;
@@ -66,7 +54,6 @@ void* get(const struct Table* table, const char* key);
    return table;
  }
  void freeTable(struct Table *table){
-   //here i have a doubt on why value of Entry is not freed up
    if(table!=NULL){
       for(int i = 0;i<table->capacity;i++){
          free((void*)table->entries[i].key);
@@ -98,7 +85,7 @@ void* get(const struct Table* table, const char* key);
          table->entries[index].value = value;
          return table->entries[index].key;
       }
-      index++;//linear probing may be change t quadratic probing
+      index++;//linear probing  change to quadratic probing
       if(index>=table->capacity){
          index= 0;
       }
@@ -112,7 +99,6 @@ void* get(const struct Table* table, const char* key);
  }
 
  char* insert(struct Table *table, const char* key, void* value){
-  //handle collision seperately
    if(table==NULL){
       return NULL;
    }
@@ -122,12 +108,11 @@ void* get(const struct Table* table, const char* key);
         resize_table(table);
    }
    
-   // Use insert_key for the actual insertion
    return insert_key(table, key, value);
  }
  void* get(const struct Table* table,const char* key){
    if(table==NULL){
-      return NULL;//cannot return with -1 should return something else;
+      return NULL;
    }
    // while()
    size_t index = hash(key,table->capacity);
@@ -143,6 +128,12 @@ void* get(const struct Table* table, const char* key);
 
 return NULL;
  }
+/**
+ *resize-->increse Array size + rehash all the existing elements 
+ * T(N)--> O(N)
+ * takes O(N) time hence we have to say O(1) is the amortized time for hashtable
+ */
+
  void resize_table(Table *table){
     if (table == NULL) return;
     
@@ -154,7 +145,6 @@ return NULL;
     table->capacity *= 2;
     table->size = 0;  // Reset size, will be recalculated during rehashing
     
-    // Allocate new entries array
     table->entries = (Entry*)calloc(table->capacity, sizeof(Entry));
     if (table->entries == NULL) {
         // Restore on failure
@@ -184,6 +174,7 @@ return NULL;
 int main(){
     printf("=== Hash Table Testing ===\n\n");
     
+    //GPT tests
     // Test 1: Basic functionality
     printf("Test 1: Basic Insert and Get\n");
     struct Table* table = NewTable(4);  // Small capacity to force expansion
@@ -321,4 +312,3 @@ int main(){
     printf("All tests completed!\n");
     return 0;
 }
-
